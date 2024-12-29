@@ -1,13 +1,10 @@
-import os
 import logging
-from dotenv import load_dotenv
 from cassandra.auth import PlainTextAuthProvider
 from cassandra.cluster import Cluster, Session
 from cassandra.cqlengine.connection import register_connection, set_default_connection
-from cassandra.query import SimpleStatement
+from .core.config import get_settings
 
-# Load environment variables from .env file
-load_dotenv(override=True)
+settings = get_settings()
 
 # Set up logging for better debugging and error messages
 logging.basicConfig(level=logging.INFO)
@@ -18,11 +15,11 @@ def get_cluster() -> Cluster:
     Create and return a Cassandra Cluster object using credentials from environment variables.
     """
     try:
-        cloud_config = {"secure_connect_bundle": os.getenv("ASTRA_DB_BUNDLE_PATH")}
+        cloud_config = {"secure_connect_bundle": settings.ASTRA_DB_BUNDLE_PATH}
         if not cloud_config["secure_connect_bundle"]:
             raise ValueError("ASTRA_DB_BUNDLE_PATH environment variable is missing.")
 
-        auth_provider = PlainTextAuthProvider("token", os.getenv("ASTRA_DB_TOKEN"))
+        auth_provider = PlainTextAuthProvider("token", settings.ASTRA_DB_TOKEN)
 
         # Create and return a cluster
         cluster = Cluster(cloud=cloud_config, auth_provider=auth_provider)
