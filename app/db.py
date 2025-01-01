@@ -6,9 +6,6 @@ from .core.config import get_settings
 
 settings = get_settings()
 
-# Set up logging for better debugging and error messages
-logging.basicConfig(level=logging.INFO)
-
 
 def get_cluster() -> Cluster:
     """
