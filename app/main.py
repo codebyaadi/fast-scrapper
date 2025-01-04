@@ -1,15 +1,20 @@
 import logging
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from typing import Union
+from typing import Union, List
 from cassandra.cqlengine.management import sync_table
 
-from app.models import Product, ProductScrapeEvent
+from app.core.config import get_settings
 from app.db import get_session
+from app.models import Product, ProductScrapeEvent
+from app.schema import ProductSchema
 
 
 # Set up logging for better debugging and error messages
 logging.basicConfig(level=logging.INFO)
+
+# Retrieve the application settings
+settings = get_settings()
 
 
 @asynccontextmanager
@@ -33,9 +38,14 @@ app = FastAPI(lifespan=lifespan)
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {
+        "name": settings.PROJECT_NAME,
+        "version": settings.PROJECT_VERSION,
+        "description": settings.PROJECT_DESC,
+        "author": settings.PROJECT_AUTHOR,
+    }
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+@app.get("/products", response_model=List[ProductSchema])
+def get_all_products():
+    return list(Product.objects.all())
