@@ -1,13 +1,12 @@
 import logging
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from typing import Union, List
 from cassandra.cqlengine.management import sync_table
 
 from app.core.config import get_settings
 from app.db import get_session
 from app.models import Product, ProductScrapeEvent
-from app.schema import ProductSchema, ProductScrapeEventDetailSchema
+from app.routers import product
 
 
 # Set up logging for better debugging and error messages
@@ -46,15 +45,4 @@ def read_root():
     }
 
 
-@app.get("/products", response_model=List[ProductSchema])
-def get_all_products():
-    return list(Product.objects.all())
-
-
-@app.get("/products/{asin}")
-def find_product_by_asin(asin: str):
-    data = dict(Product.objects.get(asin=asin))
-    events = list(ProductScrapeEvent.objects().filter(asin=asin))
-    events = [ProductScrapeEventDetailSchema(**x) for x in events]
-    data["events"] = events
-    return data
+app.include_router(product.router)
