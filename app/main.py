@@ -2,6 +2,7 @@ import logging
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from cassandra.cqlengine.management import sync_table
+from scalar_fastapi import get_scalar_api_reference
 
 from app.core.config import get_settings
 from app.db import get_session
@@ -43,6 +44,14 @@ def read_root():
         "description": settings.PROJECT_DESC,
         "author": settings.PROJECT_AUTHOR,
     }
+
+
+@app.get("/scalar", include_in_schema=False)
+async def scalar_html():
+    return get_scalar_api_reference(
+        openapi_url=app.openapi_url,
+        title=app.title,
+    )
 
 
 app.include_router(product.router)
