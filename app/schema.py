@@ -19,6 +19,21 @@ class ProductSchema(BaseModel):
     title: Optional[str]
 
 
+class ProductListSchema(BaseModel):
+    """
+    Schema for representing a product list.
+
+    Attributes:
+        asin (str): The Amazon Standard Identification Number (ASIN) of the product.
+        title (Optional[str]): The title of the product. This field is optional.
+        price_str (Optional[str]): The price of the product as a string.
+    """
+
+    asin: str
+    title: Optional[str]
+    price_str: Optional[str]
+
+
 class ProductScrapeEventSchema(BaseModel):
     """
     Schema for representing a product scrape event.
@@ -49,6 +64,7 @@ class ProductScrapeEventDetailSchema(BaseModel):
             Extracts the creation time from the UUID and sets it to the created_at attribute.
     """
 
+    uuid: UUID
     asin: str
     title: Optional[str]
     price_str: Optional[str]
@@ -56,5 +72,7 @@ class ProductScrapeEventDetailSchema(BaseModel):
 
     @model_validator(mode="before")
     def extract_time_from_uuid(cls, values):
+        """Extracts the creation time from the UUID and sets it to the created_at attribute."""
+
         values["created_at"] = uuid1_time_to_datetime(values["uuid"].time)
         return values

@@ -7,7 +7,7 @@ from scalar_fastapi import get_scalar_api_reference
 from app.core.config import get_settings
 from app.db import get_session
 from app.models import Product, ProductScrapeEvent
-from app.routers import product
+from app.routers import product, scrape_events
 
 
 # Set up logging for better debugging and error messages
@@ -55,3 +55,4 @@ async def scalar_html():
 
 
 app.include_router(product.router)
+app.include_router(scrape_events.router)
