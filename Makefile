@@ -1,6 +1,8 @@
 # Variables
 APP_NAME := app.main:app
+WORKER_NAME := app.worker.celery_app
 PYTHON := python
+CELERY := celery
 UVICORN := uvicorn
 BLACK := black
 
@@ -11,6 +13,7 @@ help:
 	@echo "Usage:"
 	@echo "  make install     - Install dependencies"
 	@echo "  make dev         - Run development server"
+	@echo "  make run-worker  - Run celery worker"
 	@echo "  make test        - Run tests"
 	@echo "  make lint        - Run code linters"
 	@echo "  make format      - Run code formatter"
@@ -33,6 +36,11 @@ dev:
 .PHONY: test
 test:
 	$(PYTHON) -m pytest
+
+# Run Celery Worker
+.PHONY: run-worker
+run-worker:
+	$(CELERY) --app $(WORKER_NAME) worker --loglevel=info
 
 # Lint code
 .PHONY: lint

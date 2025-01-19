@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     ASTRA_DB_BUNDLE_PATH: str
     ASTRA_DB_API_ENDPOINT: str
 
+    REDIS_URL: str
+
     class Config:
         env_file = ".env"
         extra = "ignore"
